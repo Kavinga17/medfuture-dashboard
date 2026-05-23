@@ -13,6 +13,11 @@ JOB_API       = "https://stage.medfuture.com.au/medadminapi/public/api/web/job-o
 PROSPECT_API  = "https://stage.medfuture.com.au/medadminapi/public/api/web/client-prospect-report-api"
 CANDIDATE_API = "https://stage.medfuture.com.au/medadminapi/public/api/web/candidate-report-api"
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+}
+
 # ── Colours ──────────────────────────────────────────────────────────────────
 NAVY   = "#1F4E79"
 BLUE   = "#2E75B6"
@@ -32,7 +37,7 @@ BORDER = "#D9E2EC"
 # ── Data fetchers ─────────────────────────────────────────────────────────────
 def fetch_jobs():
     try:
-        r = requests.get(JOB_API, timeout=20)
+        r = requests.get(JOB_API, headers=HEADERS, timeout=30)
         data = r.json()
         rows = []
         for d in data:
@@ -55,7 +60,7 @@ def fetch_jobs():
 
 def fetch_prospects():
     try:
-        r = requests.get(PROSPECT_API, timeout=20)
+        r = requests.get(PROSPECT_API, headers=HEADERS, timeout=30)
         data = r.json().get("data", [])
         rows = []
         for d in data:
@@ -75,7 +80,7 @@ def fetch_prospects():
 
 def fetch_candidates():
     try:
-        r = requests.get(CANDIDATE_API, timeout=20)
+        r = requests.get(CANDIDATE_API, headers=HEADERS, timeout=30)
         data = r.json()
         rows = []
         for d in data:
