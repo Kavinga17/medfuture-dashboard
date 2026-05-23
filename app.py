@@ -55,7 +55,8 @@ def fetch_jobs():
         df["submitted_at"]   = pd.to_datetime(df["submitted_at"],   errors="coerce")
         df["published_date"] = pd.to_datetime(df["published_date"], errors="coerce")
         return df
-    except Exception:
+    except Exception as e:
+        print(f"[fetch_jobs ERROR] {e}")
         return pd.DataFrame()
 
 def fetch_prospects():
@@ -75,7 +76,8 @@ def fetch_prospects():
         df = pd.DataFrame(rows)
         df["actionDate"] = pd.to_datetime(df["actionDate"], errors="coerce")
         return df
-    except Exception:
+    except Exception as e:
+        print(f"[fetch_prospects ERROR] {e}")
         return pd.DataFrame()
 
 def fetch_candidates():
@@ -102,7 +104,8 @@ def fetch_candidates():
         df = pd.DataFrame(rows)
         df["activity_date"] = pd.to_datetime(df["activity_date"], errors="coerce")
         return df
-    except Exception:
+    except Exception as e:
+        print(f"[fetch_candidates ERROR] {e}")
         return pd.DataFrame()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
