@@ -1,0 +1,30 @@
+/* Highlight the active period button */
+label:has(input[type="radio"]:checked) {
+    background-color: #1F4E79 !important;
+    color: #ffffff !important;
+    border-color: #1F4E79 !important;
+}
+
+/* Clean up the DatePickerRange */
+.DateInput_input {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    font-family: system-ui, sans-serif !important;
+    color: #2D3748 !important;
+    font-weight: 500 !important;
+}
+
+.DateRangePickerInput {
+    border-radius: 8px !important;
+    border: 1px solid #D9E2EC !important;
+    overflow: hidden !important;
+}
+
+.DateRangePickerInput_arrow {
+    padding: 0 6px !important;
+    color: #6B7A99 !important;
+}
+
+.DateInput {
+    border-radius: 0 !important;
+}
