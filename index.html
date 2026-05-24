@@ -83,10 +83,7 @@ table.dt tr:hover td { background: #BFD7F0; }
 <body>
 
 <div class="header">
-  <div>
-    <div class="header-sub">MEDFUTURE</div>
-    <div class="header-title">Daily Dashboard</div>
-  </div>
+  <div class="header-title">Daily Dashboard</div>
   <div class="header-ts" id="ts">Loading…</div>
 </div>
 
@@ -116,9 +113,9 @@ function daysAgo(n) { const d=new Date(); d.setDate(d.getDate()-n); return `${d.
 function minD() { return daysAgo(30); }
 
 const st = {
-  jobs:       { period:'30', start:daysAgo(30), end:todayStr(), division:'', state:'', status:'', person:'' },
-  candidates: { period:'30', start:daysAgo(30), end:todayStr(), consultant:'', status:'', state:'', profession:'' },
-  clients:    { period:'30', start:daysAgo(30), end:todayStr(), bdm:'', status:'', state:'' },
+  jobs:       { period:'0', start:todayStr(), end:todayStr(), division:'', state:'', status:'', person:'' },
+  candidates: { period:'0', start:todayStr(), end:todayStr(), consultant:'', status:'', state:'', profession:'' },
+  clients:    { period:'0', start:todayStr(), end:todayStr(), bdm:'', status:'', state:'' },
 };
 
 // ── Processors ───────────────────────────────────────────────────────────────
