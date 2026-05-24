@@ -301,9 +301,6 @@ function renderJobs() {
   const kpis=`<div class="kpi-row">
     ${kpi(d.length,'Total Submitted','#E6F1FB','#1F4E79')}
     ${kpi(pub.length,'Total Published','#E1F5EE','#085041')}
-    ${kpi(d.filter(r=>r.job_status==='Active').length,'Active','#E1F5EE','#0F6E56')}
-    ${kpi(d.filter(r=>r.job_status==='Expired').length,'Expired','#FCEBEB','#A32D2D')}
-    ${kpi(d.filter(r=>r.job_status==='Closed').length,'Closed','#FAEEDA','#633806')}
   </div>`;
 
   const divMap={}, stMap={}, perMap={}, statMap={};
