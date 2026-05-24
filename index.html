@@ -4,17 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Dashboard – Medfuture</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, -apple-system, sans-serif; background: #F4F6F9; min-height: 100vh; }
 
 .header {
   background: linear-gradient(135deg, #1F4E79 0%, #2E75B6 55%, #1D9E75 100%);
-  padding: 20px 32px; display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 32px; display: flex; align-items: center; justify-content: space-between;
 }
-.header-sub   { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.15em; margin-bottom: 3px; }
-.header-title { font-size: 22px; font-weight: 500; color: #fff; }
-.header-ts    { font-size: 12px; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 20px; }
+.header-title { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
+.header-sub   { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 0.12em; margin-bottom: 2px; }
+.header-ts    { font-size: 12px; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 20px; white-space: nowrap; }
 
 .tabs-bar { background: #fff; border-bottom: 1px solid #D9E2EC; padding: 0 32px; display: flex; }
 .tab-btn  {
@@ -32,10 +33,10 @@ body { font-family: system-ui, -apple-system, sans-serif; background: #F4F6F9; m
   border: 1px solid #D9E2EC; margin-bottom: 20px;
   display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
 }
-.fg    { display: flex; flex-direction: column; }
-.flbl  { font-size: 11px; font-weight: 600; color: #6B7A99; margin-bottom: 4px; }
-.fdiv  { width: 1px; background: #D9E2EC; align-self: stretch; margin: 0 2px; }
-.fsum  { font-size: 12px; color: #6B7A99; margin-left: auto; padding-bottom: 2px; }
+.fg   { display: flex; flex-direction: column; }
+.flbl { font-size: 11px; font-weight: 600; color: #6B7A99; margin-bottom: 4px; }
+.fdiv { width: 1px; background: #D9E2EC; align-self: stretch; margin: 0 2px; }
+.fsum { font-size: 12px; color: #6B7A99; margin-left: auto; padding-bottom: 2px; }
 
 .pbtns { display: flex; gap: 6px; }
 .pbtn  {
@@ -45,43 +46,38 @@ body { font-family: system-ui, -apple-system, sans-serif; background: #F4F6F9; m
 .pbtn.on { background: #1F4E79; color: #fff; border-color: #1F4E79; }
 
 .dr-wrap { display: flex; align-items: center; gap: 8px; }
-.dr-inp  {
-  padding: 7px 10px; font-size: 12px; border: 1px solid #D9E2EC;
-  border-radius: 8px; color: #2D3748; font-family: inherit; font-weight: 500;
-}
-.fsel {
-  min-width: 155px; font-size: 12px; padding: 7px 10px;
-  border: 1px solid #D9E2EC; border-radius: 8px; color: #2D3748;
-  background: #fff; font-family: inherit; cursor: pointer;
-}
+.dr-inp  { padding: 7px 10px; font-size: 12px; border: 1px solid #D9E2EC; border-radius: 8px; color: #2D3748; font-family: inherit; font-weight: 500; }
+.fsel    { min-width: 155px; font-size: 12px; padding: 7px 10px; border: 1px solid #D9E2EC; border-radius: 8px; color: #2D3748; background: #fff; font-family: inherit; cursor: pointer; }
 
 .kpi-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .kpi     { border-radius: 10px; padding: 18px 20px; flex: 1; min-width: 130px; }
 .kpi-v   { font-size: 32px; font-weight: 600; line-height: 1; margin-bottom: 6px; }
 .kpi-l   { font-size: 12px; font-weight: 500; opacity: 0.8; }
 
-.card    { background: #fff; border-radius: 12px; padding: 16px 18px; border: 1px solid #D9E2EC; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-.ctitle  { font-size: 11px; font-weight: 700; color: #6B7A99; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #D9E2EC; }
-.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.card   { background: #fff; border-radius: 12px; padding: 16px 18px; border: 1px solid #D9E2EC; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.ctitle { font-size: 11px; font-weight: 700; color: #6B7A99; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #D9E2EC; }
+
+.charts-row   { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 16px; }
+.charts-row-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
+.chart-wrap   { position: relative; height: 220px; }
+
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 
 .tbl-wrap { overflow-x: auto; }
 table.dt { width: 100%; border-collapse: collapse; font-size: 12px; }
-table.dt th {
-  background: #1F4E79; color: #fff; font-weight: 600; font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.04em; padding: 10px 14px;
-  text-align: left; cursor: pointer; white-space: nowrap; user-select: none;
-}
+table.dt th { background: #1F4E79; color: #fff; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 10px 14px; text-align: left; cursor: pointer; white-space: nowrap; user-select: none; }
 table.dt th:hover { background: #2760A0; }
 table.dt td { padding: 9px 14px; border: 1px solid #D9E2EC; color: #2D3748; background: #fff; }
 table.dt tr.odd td { background: #E6F1FB; }
 table.dt tr:hover td { background: #BFD7F0; }
-.no-data { color: #6B7A99; font-size: 12px; padding: 12px; }
+
+.no-data     { color: #6B7A99; font-size: 12px; padding: 12px; }
 .loading-msg { color: #6B7A99; font-size: 13px; padding: 32px; text-align: center; }
 .err-msg     { color: #A32D2D; font-size: 13px; padding: 32px; text-align: center; }
 
-@media (max-width: 960px) { .g3, .g2 { grid-template-columns: 1fr; } }
-@media (max-width: 600px) { .header, .page { padding: 14px 16px; } .tabs-bar { padding: 0 16px; } }
+@media (max-width: 960px) { .g3,.charts-row { grid-template-columns: 1fr; } .g2,.charts-row-2 { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .header,.page { padding: 14px 16px; } .tabs-bar { padding: 0 16px; } }
 </style>
 </head>
 <body>
@@ -95,9 +91,9 @@ table.dt tr:hover td { background: #BFD7F0; }
 </div>
 
 <div class="tabs-bar">
-  <button class="tab-btn act-jobs"       data-tab="jobs"       onclick="switchTab('jobs')">Job Orders</button>
-  <button class="tab-btn"                data-tab="candidates" onclick="switchTab('candidates')">Candidates</button>
-  <button class="tab-btn"                data-tab="clients"    onclick="switchTab('clients')">Clients</button>
+  <button class="tab-btn act-jobs"  data-tab="jobs"       onclick="switchTab('jobs')">Job Orders</button>
+  <button class="tab-btn"           data-tab="candidates" onclick="switchTab('candidates')">Candidates</button>
+  <button class="tab-btn"           data-tab="clients"    onclick="switchTab('clients')">Clients</button>
 </div>
 
 <div class="page" id="main"><div class="loading-msg">Loading data…</div></div>
@@ -109,12 +105,15 @@ const APIS = {
   candidates: "https://stage.medfuture.com.au/medadminapi/public/api/web/candidate-report-api",
 };
 
+const CHART_COLORS = ['#1F4E79','#2E75B6','#1D9E75','#BA7517','#7F77DD','#A32D2D','#0F6E56','#854F0B','#3C3489','#633806','#2596be','#e76f51','#457b9d','#2a9d8f','#e9c46a'];
+
 let cache = { jobs: null, prospects: null, candidates: null };
 let tab = 'jobs';
+let chartInstances = {};
 
 function todayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function daysAgo(n) { const d=new Date(); d.setDate(d.getDate()-n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function minD()     { return daysAgo(30); }
+function minD() { return daysAgo(30); }
 
 const st = {
   jobs:       { period:'30', start:daysAgo(30), end:todayStr(), division:'', state:'', status:'', person:'' },
@@ -122,7 +121,7 @@ const st = {
   clients:    { period:'30', start:daysAgo(30), end:todayStr(), bdm:'', status:'', state:'' },
 };
 
-// ── Data processors ──────────────────────────────────────────────────────────
+// ── Processors ───────────────────────────────────────────────────────────────
 function procJobs(raw) {
   return (Array.isArray(raw)?raw:[]).map(d=>({
     submitted_at:   d.submitted_at||'',
@@ -136,7 +135,7 @@ function procJobs(raw) {
 }
 
 function procProspects(raw) {
-  const arr = Array.isArray(raw)?raw:(raw.data||[]);
+  const arr=Array.isArray(raw)?raw:(raw.data||[]);
   return arr.map(d=>({
     actionDate:    d.actionDate||'',
     businessName:  d.businessName||'',
@@ -189,11 +188,9 @@ function inRange(records, field, s, e) {
   const sd=new Date(s), ed=new Date(e); ed.setHours(23,59,59,999);
   return records.filter(r=>{ const d=new Date(r[field]); return !isNaN(d)&&d>=sd&&d<=ed; });
 }
-
 function uniq(records, field) {
   return [...new Set(records.map(r=>r[field]).filter(v=>v&&v.trim()&&v!=='N/A'))].sort();
 }
-
 function h(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function kpi(val, lbl, bg, col) {
@@ -205,21 +202,61 @@ function kpi(val, lbl, bg, col) {
 
 function tbl(headers, rows) {
   if (!rows.length) return '<div class="no-data">No data for selected period</div>';
-  let out = '<div class="tbl-wrap"><table class="dt"><thead><tr>';
-  headers.forEach(hdr=>{ out+=`<th onclick="sortTbl(this)">${h(hdr)} <span style="opacity:.5;font-size:10px">⇅</span></th>`; });
-  out += '</tr></thead><tbody>';
+  let out='<div class="tbl-wrap"><table class="dt"><thead><tr>';
+  headers.forEach(hdr=>{ out+=`<th onclick="sortTbl(this)">${h(hdr)} <span style="opacity:.4;font-size:10px">⇅</span></th>`; });
+  out+='</tr></thead><tbody>';
   rows.forEach((row,i)=>{
-    out += `<tr class="${i%2?'odd':''}">`;
+    out+=`<tr class="${i%2?'odd':''}">`;
     headers.forEach(hdr=>{ out+=`<td>${h(row[hdr]??'')}</td>`; });
-    out += '</tr>';
+    out+='</tr>';
   });
-  return out + '</tbody></table></div>';
+  return out+'</tbody></table></div>';
 }
 
 function card(title, content) {
   return `<div class="card"><div class="ctitle">${title}</div>${content}</div>`;
 }
 
+function chartCard(title, canvasId) {
+  return `<div class="card"><div class="ctitle">${title}</div><div class="chart-wrap"><canvas id="${canvasId}"></canvas></div></div>`;
+}
+
+function makeDonut(id, labels, values) {
+  const ctx = document.getElementById(id);
+  if (!ctx || !labels.length) return;
+  if (chartInstances[id]) { chartInstances[id].destroy(); }
+  chartInstances[id] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: CHART_COLORS.slice(0, labels.length), borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'right', labels: { font: { size: 11, family: 'system-ui' }, padding: 10, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()}` } }
+      }
+    }
+  });
+}
+
+// ── Sort ─────────────────────────────────────────────────────────────────────
+function sortTbl(th) {
+  const table=th.closest('table'), idx=[...th.parentElement.children].indexOf(th);
+  const rows=[...table.tBodies[0].rows], asc=th.dataset.asc!=='true';
+  th.dataset.asc=asc;
+  rows.sort((a,b)=>{
+    const av=a.cells[idx].textContent.trim(), bv=b.cells[idx].textContent.trim();
+    const an=parseFloat(av.replace(/,/g,'')), bn=parseFloat(bv.replace(/,/g,''));
+    if(!isNaN(an)&&!isNaN(bn)) return asc?an-bn:bn-an;
+    return asc?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach((r,i)=>{ r.className=i%2?'odd':''; table.tBodies[0].appendChild(r); });
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
 function periodBtns(tabName) {
   const s=st[tabName];
   const opts=[{l:'Today',v:'0'},{l:'Last 7 Days',v:'7'},{l:'Last 14 Days',v:'14'},{l:'Last 30 Days',v:'30'}];
@@ -227,7 +264,6 @@ function periodBtns(tabName) {
     opts.map(o=>`<button class="pbtn${s.period===o.v?' on':''}" onclick="setPeriod('${tabName}','${o.v}')">${o.l}</button>`).join('')
   }</div></div>`;
 }
-
 function dateInputs(tabName) {
   const s=st[tabName];
   return `<div class="fg"><div class="flbl">Custom Range</div><div class="dr-wrap">
@@ -236,7 +272,6 @@ function dateInputs(tabName) {
     <input type="date" class="dr-inp" value="${s.end}" min="${minD()}" max="${todayStr()}" onchange="setDR('${tabName}','end',this.value)">
   </div></div>`;
 }
-
 function sel(id, opts, val, lbl, fn) {
   return `<div class="fg"><div class="flbl">${lbl}</div>
     <select class="fsel" id="${id}" onchange="${fn}">
@@ -245,52 +280,25 @@ function sel(id, opts, val, lbl, fn) {
     </select></div>`;
 }
 
-// ── Sort ─────────────────────────────────────────────────────────────────────
-function sortTbl(th) {
-  const table = th.closest('table');
-  const idx   = [...th.parentElement.children].indexOf(th);
-  const rows  = [...table.tBodies[0].rows];
-  const asc   = th.dataset.asc !== 'true';
-  th.dataset.asc = asc;
-  rows.sort((a,b)=>{
-    const av=a.cells[idx].textContent.trim(), bv=b.cells[idx].textContent.trim();
-    const an=parseFloat(av.replace(/,/g,'')), bn=parseFloat(bv.replace(/,/g,''));
-    if (!isNaN(an)&&!isNaN(bn)) return asc?an-bn:bn-an;
-    return asc?av.localeCompare(bv):bv.localeCompare(av);
-  });
-  rows.forEach((r,i)=>{ r.className=i%2?'odd':''; table.tBodies[0].appendChild(r); });
-}
-
-// ── Event handlers ────────────────────────────────────────────────────────────
 function setPeriod(tabName, val) {
-  st[tabName].period = val;
-  const n = parseInt(val);
-  st[tabName].end   = todayStr();
-  st[tabName].start = n===0 ? todayStr() : daysAgo(n);
-  render();
+  st[tabName].period=val; const n=parseInt(val);
+  st[tabName].end=todayStr(); st[tabName].start=n===0?todayStr():daysAgo(n); render();
 }
-function setDR(tabName, field, val) {
-  st[tabName][field]  = val;
-  st[tabName].period  = '';
-  render();
-}
-function setF(tabName, field, val) {
-  st[tabName][field] = val;
-  render();
-}
+function setDR(tabName, field, val) { st[tabName][field]=val; st[tabName].period=''; render(); }
+function setF(tabName, field, val) { st[tabName][field]=val; render(); }
 
-// ── Renderers ─────────────────────────────────────────────────────────────────
+// ── Jobs ──────────────────────────────────────────────────────────────────────
 function renderJobs() {
   if (!cache.jobs) return '<div class="loading-msg">Loading…</div>';
-  const s = st.jobs;
-  let d = inRange(cache.jobs,'submitted_at',s.start,s.end);
-  const pub = inRange(cache.jobs,'published_date',s.start,s.end);
-  if (s.division) d=d.filter(r=>r.division===s.division);
-  if (s.state)    d=d.filter(r=>r.state===s.state);
-  if (s.status)   d=d.filter(r=>r.job_status===s.status);
-  if (s.person)   d=d.filter(r=>r.created_by===s.person);
+  const s=st.jobs;
+  let d=inRange(cache.jobs,'submitted_at',s.start,s.end);
+  const pub=inRange(cache.jobs,'published_date',s.start,s.end);
+  if(s.division) d=d.filter(r=>r.division===s.division);
+  if(s.state)    d=d.filter(r=>r.state===s.state);
+  if(s.status)   d=d.filter(r=>r.job_status===s.status);
+  if(s.person)   d=d.filter(r=>r.created_by===s.person);
 
-  const kpis = `<div class="kpi-row">
+  const kpis=`<div class="kpi-row">
     ${kpi(d.length,'Total Submitted','#E6F1FB','#1F4E79')}
     ${kpi(pub.length,'Total Published','#E1F5EE','#085041')}
     ${kpi(d.filter(r=>r.job_status==='Active').length,'Active','#E1F5EE','#0F6E56')}
@@ -298,47 +306,65 @@ function renderJobs() {
     ${kpi(d.filter(r=>r.job_status==='Closed').length,'Closed','#FAEEDA','#633806')}
   </div>`;
 
-  const divMap={}, stMap={}, perMap={};
+  const divMap={}, stMap={}, perMap={}, statMap={};
   d.forEach(r=>{
     if(r.division) divMap[r.division]=(divMap[r.division]||0)+1;
     if(r.state)    stMap[r.state]=(stMap[r.state]||0)+1;
+    if(r.job_status) statMap[r.job_status]=(statMap[r.job_status]||0)+1;
     if(r.created_by&&r.created_by.trim()){
       const k=r.created_by+'|'+r.division;
       if(!perMap[k]) perMap[k]={'Created By':r.created_by,'Division':r.division,'Total':0};
       perMap[k].Total++;
     }
   });
-  const divRows = Object.entries(divMap).map(([k,v])=>({'Division':k,'Submitted':v})).sort((a,b)=>b.Submitted-a.Submitted);
-  const stRows  = Object.entries(stMap).map(([k,v])=>({'State':k,'Total':v})).sort((a,b)=>b.Total-a.Total);
-  const perRows = Object.values(perMap).sort((a,b)=>b.Total-a.Total);
 
-  return `<div class="filter-bar">
-    ${periodBtns('jobs')} <div class="fdiv"></div> ${dateInputs('jobs')} <div class="fdiv"></div>
-    ${sel('jd',uniq(cache.jobs,'division'),s.division,'Division',"setF('jobs','division',this.value)")}
-    ${sel('js',uniq(cache.jobs,'state'),s.state,'State',"setF('jobs','state',this.value)")}
-    ${sel('jst',uniq(cache.jobs,'job_status'),s.status,'Job Status',"setF('jobs','status',this.value)")}
-    ${sel('jp',uniq(cache.jobs,'created_by'),s.person,'Created By',"setF('jobs','person',this.value)")}
-    <div class="fsum">Showing ${d.length.toLocaleString()} submitted jobs</div>
-  </div>
-  ${kpis}
-  <div class="g3">
-    ${card('By Division',tbl(['Division','Submitted'],divRows))}
-    ${card('By State',tbl(['State','Total'],stRows))}
-    ${card('By Person (Created By)',tbl(['Created By','Division','Total'],perRows))}
-  </div>`;
+  const divRows  = Object.entries(divMap).map(([k,v])=>({'Division':k,'Submitted':v})).sort((a,b)=>b.Submitted-a.Submitted);
+  const stRows   = Object.entries(stMap).map(([k,v])=>({'State':k,'Total':v})).sort((a,b)=>b.Total-a.Total);
+  const perRows  = Object.values(perMap).sort((a,b)=>b.Total-a.Total);
+  const statRows = Object.entries(statMap).map(([k,v])=>({'Status':k,'Count':v})).sort((a,b)=>b.Count-a.Count);
+
+  const html = `
+    <div class="filter-bar">
+      ${periodBtns('jobs')} <div class="fdiv"></div> ${dateInputs('jobs')} <div class="fdiv"></div>
+      ${sel('jd',uniq(cache.jobs,'division'),s.division,'Division',"setF('jobs','division',this.value)")}
+      ${sel('js',uniq(cache.jobs,'state'),s.state,'State',"setF('jobs','state',this.value)")}
+      ${sel('jst',uniq(cache.jobs,'job_status'),s.status,'Job Status',"setF('jobs','status',this.value)")}
+      ${sel('jp',uniq(cache.jobs,'created_by'),s.person,'Created By',"setF('jobs','person',this.value)")}
+      <div class="fsum">Showing ${d.length.toLocaleString()} submitted jobs</div>
+    </div>
+    ${kpis}
+    <div class="charts-row">
+      ${chartCard('By Division','chart-job-div')}
+      ${chartCard('By State','chart-job-state')}
+      ${chartCard('By Job Status','chart-job-status')}
+    </div>
+    <div class="g3">
+      ${card('By Division',tbl(['Division','Submitted'],divRows))}
+      ${card('By State',tbl(['State','Total'],stRows))}
+      ${card('By Person (Created By)',tbl(['Created By','Division','Total'],perRows))}
+    </div>`;
+
+  setTimeout(()=>{
+    makeDonut('chart-job-div',   divRows.map(r=>r.Division),  divRows.map(r=>r.Submitted));
+    makeDonut('chart-job-state', stRows.map(r=>r.State),      stRows.map(r=>r.Total));
+    makeDonut('chart-job-status',statRows.map(r=>r.Status),   statRows.map(r=>r.Count));
+  }, 0);
+
+  return html;
 }
 
+// ── Candidates ────────────────────────────────────────────────────────────────
 function renderCandidates() {
   if (!cache.candidates) return '<div class="loading-msg">Loading…</div>';
-  const s = st.candidates;
-  let d = inRange(cache.candidates,'activity_date',s.start,s.end);
-  if (s.consultant) d=d.filter(r=>r.consultant===s.consultant);
-  if (s.status)     d=d.filter(r=>r.working_status===s.status);
-  if (s.state)      d=d.filter(r=>r.state===s.state);
-  if (s.profession) d=d.filter(r=>r.profession===s.profession);
+  const s=st.candidates;
+  let d=inRange(cache.candidates,'activity_date',s.start,s.end);
+  if(s.consultant) d=d.filter(r=>r.consultant===s.consultant);
+  if(s.status)     d=d.filter(r=>r.working_status===s.status);
+  if(s.state)      d=d.filter(r=>r.state===s.state);
+  if(s.profession) d=d.filter(r=>r.profession===s.profession);
 
   function cnt(v){ return d.filter(r=>r.working_status===v).length; }
-  const kpis = `<div class="kpi-row">
+  const kpis=`<div class="kpi-row">
     ${kpi(cnt('Submissions'),'Submissions','#E6F1FB','#1F4E79')}
     ${kpi(cnt('Initial Screening'),'Initial Screening','#EEEDFE','#3C3489')}
     ${kpi(cnt('Job Matching'),'Job Matching','#E1F5EE','#085041')}
@@ -349,103 +375,139 @@ function renderCandidates() {
     ${kpi(cnt('Declined'),'Declined','#FCEBEB','#A32D2D')}
   </div>`;
 
-  const wsMap={}, conMap={};
+  const wsMap={}, conMap={}, stMap={};
   d.forEach(r=>{
     if(r.working_status) wsMap[r.working_status]=(wsMap[r.working_status]||0)+1;
+    if(r.state) stMap[r.state]=(stMap[r.state]||0)+1;
     if(r.consultant&&r.consultant.trim()){
       const k=r.consultant+'|'+r.working_status;
       if(!conMap[k]) conMap[k]={'Consultant':r.consultant,'Working Status':r.working_status,'Total':0};
       conMap[k].Total++;
     }
   });
+
   const wsRows  = Object.entries(wsMap).map(([k,v])=>({'Working Status':k,'Count':v})).sort((a,b)=>b.Count-a.Count);
   const conRows = Object.values(conMap).sort((a,b)=>b.Total-a.Total);
+  const stRows  = Object.entries(stMap).map(([k,v])=>({'State':k,'Count':v})).sort((a,b)=>b.Count-a.Count);
   const actRows = d.map(r=>({
-    'Candidate':      r.candidate_name,
-    'Profession':     r.profession,
-    'State':          r.state,
-    'Department':     r.department,
-    'Working Status': r.working_status,
-    'Consultant':     r.consultant,
-    'Activity Date':  r.activity_date ? new Date(r.activity_date).toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'}) : '',
+    'Candidate':r.candidate_name,'Profession':r.profession,'State':r.state,
+    'Department':r.department,'Working Status':r.working_status,'Consultant':r.consultant,
+    'Activity Date':r.activity_date?new Date(r.activity_date).toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'}):'',
   })).sort((a,b)=>new Date(b['Activity Date'])-new Date(a['Activity Date']));
 
-  return `<div class="filter-bar">
-    ${periodBtns('candidates')} <div class="fdiv"></div> ${dateInputs('candidates')} <div class="fdiv"></div>
-    ${sel('cc',uniq(cache.candidates,'consultant'),s.consultant,'Consultant',"setF('candidates','consultant',this.value)")}
-    ${sel('cws',uniq(cache.candidates,'working_status'),s.status,'Working Status',"setF('candidates','status',this.value)")}
-    ${sel('cst',uniq(cache.candidates,'state'),s.state,'State',"setF('candidates','state',this.value)")}
-    ${sel('cp',uniq(cache.candidates,'profession'),s.profession,'Profession',"setF('candidates','profession',this.value)")}
-  </div>
-  ${kpis}
-  <div class="g2">
-    ${card('Working Status Summary',tbl(['Working Status','Count'],wsRows))}
-    ${card('By Consultant',tbl(['Consultant','Working Status','Total'],conRows))}
-  </div>
-  ${card('Candidate Activity',tbl(['Candidate','Profession','State','Department','Working Status','Consultant','Activity Date'],actRows))}`;
+  const html=`
+    <div class="filter-bar">
+      ${periodBtns('candidates')} <div class="fdiv"></div> ${dateInputs('candidates')} <div class="fdiv"></div>
+      ${sel('cc',uniq(cache.candidates,'consultant'),s.consultant,'Consultant',"setF('candidates','consultant',this.value)")}
+      ${sel('cws',uniq(cache.candidates,'working_status'),s.status,'Working Status',"setF('candidates','status',this.value)")}
+      ${sel('cst',uniq(cache.candidates,'state'),s.state,'State',"setF('candidates','state',this.value)")}
+      ${sel('cp',uniq(cache.candidates,'profession'),s.profession,'Profession',"setF('candidates','profession',this.value)")}
+    </div>
+    ${kpis}
+    <div class="charts-row">
+      ${chartCard('Working Status','chart-cand-ws')}
+      ${chartCard('By State','chart-cand-state')}
+      ${chartCard('By Consultant','chart-cand-cons')}
+    </div>
+    <div class="g2">
+      ${card('Working Status Summary',tbl(['Working Status','Count'],wsRows))}
+      ${card('By Consultant',tbl(['Consultant','Working Status','Total'],conRows))}
+    </div>
+    ${card('Candidate Activity',tbl(['Candidate','Profession','State','Department','Working Status','Consultant','Activity Date'],actRows))}`;
+
+  const conSummary = Object.entries(
+    d.filter(r=>r.consultant&&r.consultant.trim()).reduce((acc,r)=>{ acc[r.consultant]=(acc[r.consultant]||0)+1; return acc; },{})
+  ).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v).slice(0,10);
+
+  setTimeout(()=>{
+    makeDonut('chart-cand-ws',   wsRows.map(r=>r['Working Status']), wsRows.map(r=>r.Count));
+    makeDonut('chart-cand-state',stRows.map(r=>r.State),             stRows.map(r=>r.Count));
+    makeDonut('chart-cand-cons', conSummary.map(r=>r.k),             conSummary.map(r=>r.v));
+  }, 0);
+
+  return html;
 }
 
+// ── Clients ───────────────────────────────────────────────────────────────────
 function renderClients() {
   if (!cache.prospects) return '<div class="loading-msg">Loading…</div>';
-  const s = st.clients;
-  let d = inRange(cache.prospects,'actionDate',s.start,s.end);
-  if (s.bdm)    d=d.filter(r=>r.bdm===s.bdm);
-  if (s.status) d=d.filter(r=>r.workingStatus===s.status);
-  if (s.state)  d=d.filter(r=>r.state===s.state);
+  const s=st.clients;
+  let d=inRange(cache.prospects,'actionDate',s.start,s.end);
+  if(s.bdm)    d=d.filter(r=>r.bdm===s.bdm);
+  if(s.status) d=d.filter(r=>r.workingStatus===s.status);
+  if(s.state)  d=d.filter(r=>r.state===s.state);
 
-  const kpis = `<div class="kpi-row">
+  const kpis=`<div class="kpi-row">
     ${kpi(d.length,'Total Clients','#E6F1FB','#1F4E79')}
     ${kpi(d.filter(r=>r.workingStatus==='Proposed').length,'Proposed','#E1F5EE','#085041')}
     ${kpi(d.filter(r=>r.workingStatus==='Tapped').length,'Tapped','#FAEEDA','#633806')}
   </div>`;
 
-  const bdmMap={}, stMap={};
+  const bdmMap={}, stMap={}, wsMap={};
   d.forEach(r=>{
+    if(r.workingStatus) wsMap[r.workingStatus]=(wsMap[r.workingStatus]||0)+1;
+    if(r.state&&r.state!=='N/A') stMap[r.state]=(stMap[r.state]||0)+1;
     if(r.bdm&&r.bdm.trim()&&r.bdm!=='N/A'){
       const k=r.bdm+'|'+r.workingStatus;
       if(!bdmMap[k]) bdmMap[k]={'Assigned To':r.bdm,'Status':r.workingStatus,'Count':0};
       bdmMap[k].Count++;
     }
-    if(r.state&&r.state!=='N/A') stMap[r.state]=(stMap[r.state]||0)+1;
   });
+
   const bdmRows = Object.values(bdmMap).sort((a,b)=>b.Count-a.Count);
   const stRows  = Object.entries(stMap).map(([k,v])=>({'State':k,'Count':v})).sort((a,b)=>b.Count-a.Count);
+  const wsRows  = Object.entries(wsMap).map(([k,v])=>({'Status':k,'Count':v})).sort((a,b)=>b.Count-a.Count);
   const actRows = d.map(r=>({
-    'Business Name': r.businessName,
-    'State':         r.state,
-    'Status':        r.workingStatus,
-    'Assigned To':   r.bdm,
-    'Date':          r.actionDate ? new Date(r.actionDate).toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'}) : '',
+    'Business Name':r.businessName,'State':r.state,'Status':r.workingStatus,'Assigned To':r.bdm,
+    'Date':r.actionDate?new Date(r.actionDate).toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'}):'',
   })).sort((a,b)=>new Date(b.Date)-new Date(a.Date));
 
-  return `<div class="filter-bar">
-    ${periodBtns('clients')} <div class="fdiv"></div> ${dateInputs('clients')} <div class="fdiv"></div>
-    ${sel('pb',uniq(cache.prospects,'bdm'),s.bdm,'Assigned To',"setF('clients','bdm',this.value)")}
-    ${sel('pws',uniq(cache.prospects,'workingStatus'),s.status,'Status',"setF('clients','status',this.value)")}
-    ${sel('pst',uniq(cache.prospects,'state'),s.state,'State',"setF('clients','state',this.value)")}
-  </div>
-  ${kpis}
-  <div class="g2">
-    ${card('By Assigned Staff',tbl(['Assigned To','Status','Count'],bdmRows))}
-    ${card('By State',tbl(['State','Count'],stRows))}
-  </div>
-  ${card('Client Activity',tbl(['Business Name','State','Status','Assigned To','Date'],actRows))}`;
+  const bdmSummary = Object.entries(
+    d.filter(r=>r.bdm&&r.bdm!=='N/A').reduce((acc,r)=>{ acc[r.bdm]=(acc[r.bdm]||0)+1; return acc; },{})
+  ).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v).slice(0,10);
+
+  const html=`
+    <div class="filter-bar">
+      ${periodBtns('clients')} <div class="fdiv"></div> ${dateInputs('clients')} <div class="fdiv"></div>
+      ${sel('pb',uniq(cache.prospects,'bdm'),s.bdm,'Assigned To',"setF('clients','bdm',this.value)")}
+      ${sel('pws',uniq(cache.prospects,'workingStatus'),s.status,'Status',"setF('clients','status',this.value)")}
+      ${sel('pst',uniq(cache.prospects,'state'),s.state,'State',"setF('clients','state',this.value)")}
+    </div>
+    ${kpis}
+    <div class="charts-row">
+      ${chartCard('By Status','chart-cli-ws')}
+      ${chartCard('By State','chart-cli-state')}
+      ${chartCard('By Assigned Staff','chart-cli-bdm')}
+    </div>
+    <div class="g2">
+      ${card('By Assigned Staff',tbl(['Assigned To','Status','Count'],bdmRows))}
+      ${card('By State',tbl(['State','Count'],stRows))}
+    </div>
+    ${card('Client Activity',tbl(['Business Name','State','Status','Assigned To','Date'],actRows))}`;
+
+  setTimeout(()=>{
+    makeDonut('chart-cli-ws',    wsRows.map(r=>r.Status),    wsRows.map(r=>r.Count));
+    makeDonut('chart-cli-state', stRows.map(r=>r.State),     stRows.map(r=>r.Count));
+    makeDonut('chart-cli-bdm',   bdmSummary.map(r=>r.k),     bdmSummary.map(r=>r.v));
+  }, 0);
+
+  return html;
 }
 
-// ── Tab switch ────────────────────────────────────────────────────────────────
+// ── Tab / Render ──────────────────────────────────────────────────────────────
 function switchTab(name) {
-  tab = name;
+  tab=name;
   document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.className = 'tab-btn' + (b.dataset.tab===name ? ` act-${name}` : '');
+    b.className='tab-btn'+(b.dataset.tab===name?` act-${name}`:'');
   });
   render();
 }
 
 function render() {
-  const el = document.getElementById('main');
-  if (tab==='jobs')       el.innerHTML = renderJobs();
-  else if (tab==='candidates') el.innerHTML = renderCandidates();
-  else if (tab==='clients')    el.innerHTML = renderClients();
+  const el=document.getElementById('main');
+  if(tab==='jobs')       el.innerHTML=renderJobs();
+  else if(tab==='candidates') el.innerHTML=renderCandidates();
+  else if(tab==='clients')    el.innerHTML=renderClients();
 }
 
 fetchAll();
