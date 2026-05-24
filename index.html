@@ -14,7 +14,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: #F4F6F9; m
   padding: 18px 32px; display: flex; align-items: center; justify-content: space-between;
 }
 .header-title { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
-.header-sub   { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 0.12em; margin-bottom: 2px; }
+.header-sub   { font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 300; margin-bottom: 2px; }
 .header-ts    { font-size: 12px; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 20px; white-space: nowrap; }
 
 .tabs-bar { background: #fff; border-bottom: 1px solid #D9E2EC; padding: 0 32px; display: flex; }
@@ -83,7 +83,10 @@ table.dt tr:hover td { background: #BFD7F0; }
 <body>
 
 <div class="header">
-  <div class="header-title">Daily Dashboard</div>
+  <div>
+    <div class="header-sub">medfuture</div>
+    <div class="header-title">Daily Dashboard</div>
+  </div>
   <div class="header-ts" id="ts">Loading…</div>
 </div>
 
