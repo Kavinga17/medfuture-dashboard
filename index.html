@@ -91,9 +91,9 @@ table.dt tr:hover td { background: #BFD7F0; }
 </div>
 
 <div class="tabs-bar">
-  <button class="tab-btn act-jobs"  data-tab="jobs"       onclick="switchTab('jobs')">Job Orders</button>
-  <button class="tab-btn"           data-tab="candidates" onclick="switchTab('candidates')">Candidates</button>
-  <button class="tab-btn"           data-tab="clients"    onclick="switchTab('clients')">Clients</button>
+  <button class="tab-btn act-candidates" data-tab="candidates" onclick="switchTab('candidates')">Candidates</button>
+  <button class="tab-btn"                data-tab="clients"    onclick="switchTab('clients')">Clients</button>
+  <button class="tab-btn"               data-tab="jobs"       onclick="switchTab('jobs')">Jobs</button>
 </div>
 
 <div class="page" id="main"><div class="loading-msg">Loading data…</div></div>
@@ -108,7 +108,7 @@ const APIS = {
 const CHART_COLORS = ['#1F4E79','#2E75B6','#1D9E75','#BA7517','#7F77DD','#A32D2D','#0F6E56','#854F0B','#3C3489','#633806','#2596be','#e76f51','#457b9d','#2a9d8f','#e9c46a'];
 
 let cache = { jobs: null, prospects: null, candidates: null };
-let tab = 'jobs';
+let tab = 'candidates';
 let chartInstances = {};
 
 function todayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
